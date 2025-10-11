@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-primary">Admin Dashboard</h2>
+    <a href="#" class="btn btn-outline-primary">
+      <i class="fa-solid fa-arrow-rotate-right me-1"></i> Refresh
+    </a>
+  </div>
+
+  <!-- Dashboard Summary Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <a href="{% url 'admin_all_bills' %}" style="text-decoration:none; color:black;">
+            <div class="card-body text-center">
+                <i class="fa-solid fa-receipt fa-2x text-warning mb-2"></i>
+                <h5 class="card-title">Total Bills</h5>
+                <h4 class="fw-bold text-dark">{{ total_bills|default:"0" }}</h4>
+            </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-body text-center">
+          <i class="fa-solid fa-indian-rupee-sign fa-2x text-success mb-2"></i>
+          <h5 class="card-title">Total Revenue</h5>
+          <h4 class="fw-bold text-dark">₹{{ total_revenue|default:"0.00" }}</h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <a href="{% url 'all_employees' %}" style="text-decoration:none; color:black;">
+            <div class="card-body text-center">
+            <i class="fa-solid fa-users fa-2x text-warning mb-2"></i>
+            <h5 class="card-title">Employees</h5>
+            <h4 class="fw-bold text-dark">{{ total_employees|default:"0" }}</h4>
+            </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+            <div class="card-body text-center">
+            <i class="fa-solid fa-clock fa-2x text-danger mb-2"></i>
+            <h5 class="card-title">Today’s Bills</h5>
+            <h4 class="fw-bold text-dark">{{ todays_bills|default:"0" }}</h4>
+            </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions Section -->
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0"><i class="fa-solid fa-bolt me-2"></i>Quick Actions</h5>
+    </div>
+    <div class="card-body">
+        <div class="d-flex flex-wrap gap-5">
+            <a href="{% url 'add_item' %}" class="btn btn-outline-primary">
+                <i class="fa-solid fa-utensils me-1"></i> Add Menu Item
+            </a>   
+            
+            <a href="{% url 'add_employee' %}" class="btn btn-outline-success">
+                <i class="fa-solid fa-user-plus me-1"></i> Add Employee
+            </a>
+
+            <a href="{% url 'all_employees' %}" class="btn btn-outline-warning">
+                <i class="fa-solid fa-users-gear me-1"></i> Manage Employees
+            </a>
+
+            <a href="{% url 'admin_all_bills' %}" class="btn btn-outline-info">
+                <i class="fa-solid fa-file-invoice me-1"></i> View All Bills
+            </a>
+
+            <a href="{% url 'bill_reports' %}" class="btn btn-outline-danger">
+                <i class="fa-solid fa-file-pdf me-1"></i> Download Report
+            </a>
+        </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

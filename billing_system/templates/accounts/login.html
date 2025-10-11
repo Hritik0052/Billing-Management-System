@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Billing System{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center mt-5 pt-5">
+    <div class="col-md-4">
+        <div class="card shadow p-4">
+            <h3 class="text-center mb-4">Login</h3>
+            {% if message %}
+                <div class="alert alert-danger">{{ message }}</div>
+            {% endif %}
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" name="username" id="username" class="form-control" placeholder="Enter username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" name="password" id="password" class="form-control" placeholder="Enter password" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-40 mt-4 d-block mx-auto">Login</button>
+                
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Bills{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row mt-4">
+      <!-- Sidebar 
+      <nav class="col-md-2 d-none d-md-block bg-light sticky-top">
+          <div class="position-sticky">
+              <ul class="nav flex-column">
+                  <li class="nav-item mb-2 w-100">
+                    <div class="card bg-primary text-white text-center w-100">
+                      <div class="card-body py-2">
+                          {{ request.user.username }}
+                      </div>
+                    </div>
+                  </li>
+                  <li class="nav-item mb-2">
+                      <a class="nav-link" href="{% url 'employee_dashboard' %}">Dashboard</a>
+                  </li>
+                  <li class="nav-item mb-2">
+                      <a class="nav-link" href="{% url 'create_bill' %}">Generate Bill</a>
+                  </li>
+                  <li class="nav-item mb-2 fw-bold fs-4">
+                      <a class="nav-link" href="{% url 'all_bills' %}">All Bill History</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="{% url 'bill_reports' %}">Bill Reports</a>
+                  </li>
+              </ul>
+          </div>
+      </nav>
+      -->
+
+      <!-- main content-->
+      <main class="col-md-10">
+        <div class="card shadow-sm">
+          <div class="card-header bg-primary text-white text-center">
+            <h4 class="mb-0">All Bills</h4>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover align-middle" id="billTable">
+                <thead class="table-light">
+                  <tr>
+                    <th scope="col">Sr No</th>
+                    <th scope="col">Customer Name</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Bill No</th>
+                    <th scope="col" class="text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for bill in bills %}
+                  <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ bill.customer_name }}</td>
+                    <td>{{ bill.created_at|date:"d-M-Y" }}</td>
+                    <td>₹{{ bill.total }}</td>
+                    <td>{{ bill.bill_no }}</td>
+                    <td class="text-center">
+                      <a href="{% url 'view_bill' bill_no=bill.bill_no %}">
+                        <i class="fa-solid fa-eye text-primary" style="cursor:pointer;"></i>
+                      </a>
+                      <!-- <a href="#" class="btn btn-sm btn-warning">Edit</a>
+                      <a href="#" class="btn btn-sm btn-danger">Delete</a>  -->
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="6" class="text-center text-muted">No bills found.</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+
+            <!-- ✅ Pagination Controls -->
+            <div class="d-flex justify-content-center align-items-center mt-3">
+              <i id="prevBtn" class="fa-solid fa-circle-left fa-2x text-secondary me-3" style="cursor: pointer;"></i>
+              <span id="pageInfo" class="fw-bold mx-2"></span>
+              <i id="nextBtn" class="fa-solid fa-circle-right fa-2x text-secondary" style="cursor: pointer;"></i>
+            </div>
+
+          </div>
+        </div>
+      </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+  <script src="{% static 'js/pagination.js' %}"></script>
+{% endblock %}

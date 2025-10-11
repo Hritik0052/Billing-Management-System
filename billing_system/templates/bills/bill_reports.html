@@ -1,0 +1,131 @@
+{% extends 'base.html' %} 
+
+{% block content %}
+    <main class="d-flex justify-content-center align-items-center" >
+      <div class="col-sm-6 col-lg-12">
+        <div class="card shadow-sm">
+          <div class="card-header bg-primary text-white text-center">
+            <h3>
+              <a href="{% url 'employee_dashboard' %}">
+                <i class="fa-solid fa-user-circle text-white" style="cursor:pointer;"></i>
+              </a>
+            </h3>
+            <h4 class="mb-0">Click Here to Download Report as PDF</h4>
+            <h3>
+              <a href="{% url 'download_bills_report' %}?{{ request.GET.urlencode }}">
+                <i class="fa-solid fa-download text-white" style="cursor:pointer;"></i>
+              </a>
+            </h3>
+          </div>
+          
+          <div class="card-body">
+            <div class="table-responsive">
+              <form method="get" action="" class="row g-2 align-items-center mb-3">
+                <!-- Bill No -->
+                <div class="col-md-2">
+                  <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="fa-solid fa-receipt"></i></span>
+                    <input type="text" name="bill_no" class="form-control" placeholder="Bill No" value="{{ request.GET.bill_no }}">
+                  </div>
+                </div>
+
+                <!-- Amount Range -->
+                <div class="col-md-2">
+                  <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="fa-solid fa-indian-rupee-sign"></i></span>
+                    <input type="number" name="min_amount" class="form-control" placeholder="Min ₹" value="{{ request.GET.min_amount }}">
+                  </div>
+                </div>
+
+                <div class="col-md-2">
+                  <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="fa-solid fa-indian-rupee-sign"></i></span>
+                    <input type="number" name="max_amount" class="form-control" placeholder="Max ₹" value="{{ request.GET.max_amount }}">
+                  </div>
+                </div>
+
+                <!-- Date Range -->
+                <div class="col-md-2">
+                  <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="fa-regular fa-calendar"></i></span>
+                    <input type="date" name="from_date" class="form-control" value="{{ request.GET.from_date }}">
+                  </div>
+                </div>
+
+                <div class="col-md-2">
+                  <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="fa-regular fa-calendar-days"></i></span>
+                    <input type="date" name="to_date" class="form-control" value="{{ request.GET.to_date }}">
+                  </div>
+                </div>
+
+                <!-- Sort Options -->
+                <div class="col-md-2">
+                  <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="fa-solid fa-sort"></i></span>
+                    <select name="sort_by" class="form-select">
+                      <option value="">Sort By</option>
+                      <option value="amount_asc" {% if request.GET.sort_by == 'amount_asc' %}selected{% endif %}>Amount ↑</option>
+                      <option value="amount_desc" {% if request.GET.sort_by == 'amount_desc' %}selected{% endif %}>Amount ↓</option>
+                      <option value="date_asc" {% if request.GET.sort_by == 'date_asc' %}selected{% endif %}>Date ↑</option>
+                      <option value="date_desc" {% if request.GET.sort_by == 'date_desc' %}selected{% endif %}>Date ↓</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Filter Button -->
+                <div class="col-md-2 text-center">
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-filter"></i> Apply Filter
+                  </button>
+                </div>
+              </for m>
+
+              <table class="table table-bordered table-hover align-middle" id="billTable">
+                <thead class="table-light">
+                  <tr>
+                    <th scope="col">Sr No</th>
+                    <th scope="col">Customer Name</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Bill No</th>
+                    <th scope="col" class="text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for bill in bills %}
+                  <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ bill.customer_name }}</td>
+                    <td>{{ bill.created_at|date:"d-M-Y" }}</td>
+                    <td>₹{{ bill.total }}</td>
+                    <td>{{ bill.bill_no }}</td>
+                    <td class="text-center">
+                      <a href="{% url 'view_bill' bill_no=bill.bill_no %}">
+                        <i class="fa-solid fa-eye text-primary" style="cursor:pointer;"></i>
+                      </a>
+                      <!-- <a href="#" class="btn btn-sm btn-warning">Edit</a>
+                      <a href="#" class="btn btn-sm btn-danger">Delete</a>  -->
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="6" class="text-center text-muted">No bills found.</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+
+            <!-- ✅ Pagination Controls 
+              <div class="d-flex justify-content-center align-items-center mt-3">
+              <i id="prevBtn" class="fa-solid fa-circle-left fa-2x text-secondary me-3" style="cursor: pointer;"></i>
+              <span id="pageInfo" class="fw-bold mx-2"></span>
+              <i id="nextBtn" class="fa-solid fa-circle-right fa-2x text-secondary" style="cursor: pointer;"></i>
+            </div>  -->
+
+          </div>
+        </div>
+      </div>
+    </main>
+{% endblock %}

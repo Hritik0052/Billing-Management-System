@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid">
+  <div class="row mt-4">
+      <!-- Sidebar -->
+      <nav class="col-md-2 d-none d-md-block bg-light">
+          <div class="position-sticky">
+              <ul class="nav flex-column">
+                   <li class="nav-item mb-2 w-100">
+                    <div class="card bg-primary text-white text-center w-100">
+                      <div class="card-body py-2">
+                          {{ request.user.username }}
+                      </div>
+                    </div>
+                  </li>
+                  <li class="nav-item mb-2 fw-bold fs-4">
+                      <a class="nav-link" href="#">Dashboard</a>
+                  </li>
+                  <li class="nav-item mb-2">
+                      <a class="nav-link" href="{% url 'create_bill' %}">Generate Bill</a>
+                  </li>
+                  <li class="nav-item mb-2">
+                      <a class="nav-link" href="{% url 'all_bills' %}">All Bill History</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="#">Bill Reports</a>
+                  </li>
+              </ul>
+          </div>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4">
+          <h3 class="mb-4 mt-4">Hi {{ employee_name }} 👋</h3>
+          
+          <div class="row g-4">
+              <!-- Card 1: Total Items -->
+              <div class="col-md-4">
+                  <div class="card shadow-sm border-0 text-center p-3 text-dark fw-bold">
+                      <div class="card-body">
+                          <h5 class="card-title">Total Items</h5>
+                          <p class="card-text display-5">{{ total_items }}</p>
+                      </div>
+                  </div>
+              </div>
+
+              <!-- Card 2: Total Bills -->
+              <div class="col-md-4">
+                  <div class="card shadow-sm border-0 text-center p-3 text-dark fw-bold">
+                      <div class="card-body">
+                          <h5 class="card-title">Total Bills</h5>
+                          <p class="card-text display-5">{{ total_bills }}</p>
+                      </div>
+                  </div>
+              </div>
+
+              <!-- Card 3: Example: Pending Bills -->
+              <div class="col-md-4">
+                  <div class="card shadow-sm border-0 text-center p-3 text-dark fw-bold">
+                      <div class="card-body">
+                          <h5 class="card-title">Pending Bills</h5>
+                          <p class="card-text display-5">0</p> <!-- You can calculate dynamically -->
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          <!-- Optionally, you can keep the Generate Bill button below -->
+          <div class="mt-5">
+              <a href="{% url 'create_bill' %}" class="btn btn-dark btn-lg rounded-pill shadow">Generate Bill</a>
+          </div>
+      </main>
+  </div>
+</div>
+{% endblock %}

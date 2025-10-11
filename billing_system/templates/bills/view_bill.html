@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Bill {{ bill.bill_no }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="card shadow-lg" id="billCard">
+    <div class="card-header bg-primary text-white text-center">
+      <h3 class="mb-0">Bill #{{ bill.bill_no }}</h3>
+    </div>
+
+    <div class="card-body">
+      <!-- Customer Info -->
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <p><strong>Customer:</strong> {{ bill.customer_name }}</p>
+          <p><strong>Phone:</strong> {{ bill.customer_phone }}</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <p><strong>Created By:</strong> {{ bill.created_by.username }}</p>
+          <p><strong>Date:</strong> {{ bill.created_at|date:"d M Y, H:i" }}</p>
+        </div>
+      </div>
+
+      <!-- Items Table -->
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle text-center">
+          <thead class="table-light">
+            <tr>
+              <th>Item</th>
+              <th>Price (₹)</th>
+              <th>Qty</th>
+              <th>Subtotal (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for bi in bill.items.all %}
+            <tr>
+              <td>{{ bi.item.name }}</td>
+              <td>{{ bi.price }}</td>
+              <td>{{ bi.quantity }}</td>
+              <td>{{ bi.subtotal }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="text-end mt-3">
+        <h4><strong>Total: ₹{{ bill.total }}</strong></h4>
+      </div>
+    </div>
+  </div>
+
+  <!-- Print Button -->
+  <div class="text-center mt-4">
+    <button onclick="window.print()" class="btn btn-primary">
+      <i class="fa-solid fa-print me-2"></i> Print Bill
+    </button>
+  </div>
+</div>
+
+{% endblock %}

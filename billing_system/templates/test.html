@@ -1,0 +1,231 @@
+document.addEventListener('DOMContentLoaded', () => {
+  // --- Elements (make sure these IDs exist in your template) ---
+  const itemsDataEl = document.getElementById('items-data'); // json_script output
+  const itemsData = itemsDataEl ? JSON.parse(itemsDataEl.textContent) : [];
+  const itemsTableBody = document.querySelector('#itemsTable tbody');
+  const addItemBtn = document.getElementById('addItemBtn');
+  const deleteBtn = document.getElementById('deleteBtn');
+  const selectAllCheckbox = document.getElementById('selectAll');
+  const totalPriceInput = document.getElementById('totalPrice');
+  const billForm = document.getElementById('billForm'); // form id
+  const alertContainer = document.getElementById('alertContainer');
+
+            if (!itemsTableBody) {
+              console.error('itemsTable tbody not found (#itemsTable tbody).');
+              return;
+            }
+
+            // --- Helpers ---
+            function showAlert(message, type = 'danger') {
+              if (!alertContainer) return;
+              alertContainer.innerHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">         <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                  ${message}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>     </div>
+              `;
+              // optional: remove after 5s
+              setTimeout(() => {
+                const bsAlert = alertContainer.querySelector('.alert');
+                if (bsAlert) {
+                  // bootstrap dismissal
+                  const alertInstance = bootstrap.Alert.getOrCreateInstance(bsAlert);
+                  alertInstance.close();
+                }
+              }, 5000);
+            }
+
+  function updateTotal() {
+    let total = 0;
+    itemsTableBody.querySelectorAll('tr').forEach(row => {
+      const totalCell = row.querySelector('.totalCell');
+      const val = parseFloat((totalCell && totalCell.textContent) || '0') || 0;
+      total += val;
+    });
+    if (totalPriceInput) totalPriceInput.value = total.toFixed(2);
+  }
+
+  function renumberRows() {
+    itemsTableBody.querySelectorAll('tr').forEach((row, index) => {
+      const itemNoCell = row.querySelector('.itemNoCell');
+      if (itemNoCell) itemNoCell.textContent = index + 1;
+    });
+  }
+
+  function attachRowHandlers(row) {
+    const select = row.querySelector('select.itemSelect');
+    const priceInput = row.querySelector('input.priceInput');
+    const qtyInput = row.querySelector('input.qtyInput');
+    const totalCell = row.querySelector('.totalCell');
+
+    function updateRowTotal() {
+      const price = parseFloat(priceInput.value) || 0;
+      let quantity = parseInt(qtyInput.value || '0', 10);
+      if (isNaN(quantity) || quantity < 1) quantity = 0; // will be handled by validation
+      const rowTotal = price * quantity;
+      totalCell.textContent = rowTotal.toFixed(2);
+      updateTotal();
+    }
+
+    if (select) {
+      select.addEventListener('change', () => {
+        const option = select.options[select.selectedIndex];
+        const price = option && option.dataset && option.dataset.price ? parseFloat(option.dataset.price) || 0 : 0;
+        if (priceInput) priceInput.value = price.toFixed(2);
+        updateRowTotal();
+      });
+    }
+
+    if (qtyInput) {
+      qtyInput.addEventListener('input', updateRowTotal);
+    }
+
+    // initial calc (useful for rows rendered server-side)
+    updateRowTotal();
+  }
+
+  function createRow() {
+    const tr = document.createElement('tr');
+
+    // Checkbox cell
+    const selectCell = document.createElement('td');
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    selectCell.appendChild(checkbox);
+    tr.appendChild(selectCell);
+
+    // Item No cell
+    const itemNoCell = document.createElement('td');
+    itemNoCell.className = 'itemNoCell';
+    itemNoCell.textContent = itemsTableBody.children.length + 1;
+    tr.appendChild(itemNoCell);
+
+    // Item Name cell - dropdown
+    const itemNameCell = document.createElement('td');
+    const select = document.createElement('select');
+    select.name = 'item';
+    select.className = 'form-select itemSelect';
+    const defaultOpt = document.createElement('option');
+    defaultOpt.value = '';
+    defaultOpt.textContent = 'Select item';
+    select.appendChild(defaultOpt);
+    itemsData.forEach(item => {
+      const opt = document.createElement('option');
+      opt.value = item.id;
+      opt.textContent = item.name;
+      // store price in data attribute
+      if (item.price !== undefined) opt.dataset.price = item.price;
+      select.appendChild(opt);
+    });
+    itemNameCell.appendChild(select);
+    tr.appendChild(itemNameCell);
+
+    // Price cell - readonly input
+    const priceCell = document.createElement('td');
+    const priceInput = document.createElement('input');
+    priceInput.type = 'number';
+    priceInput.readOnly = true;
+    priceInput.className = 'form-control priceInput';
+    priceInput.value = '0.00';
+    priceCell.appendChild(priceInput);
+    tr.appendChild(priceCell);
+
+    // Quantity cell - editable input number
+    const qtyCell = document.createElement('td');
+    const qtyInput = document.createElement('input');
+    qtyInput.type = 'number';
+    qtyInput.name = 'quantity';
+    qtyInput.className = 'form-control qtyInput';
+    qtyInput.min = 1;
+    qtyInput.value = 1;
+    qtyCell.appendChild(qtyInput);
+    tr.appendChild(qtyCell);
+
+    // Total cell - readonly span
+    const totalCell = document.createElement('td');
+    totalCell.className = 'totalCell';
+    totalCell.textContent = '0.00';
+    tr.appendChild(totalCell);
+
+    // attach handlers and return
+    attachRowHandlers(tr);
+    return tr;
+  }
+
+  // Attach handlers to any pre-rendered rows (if you render rows server-side)
+  itemsTableBody.querySelectorAll('tr').forEach(row => {
+    // Mark up: ensure item select has class 'itemSelect', price input 'priceInput', qty 'qtyInput'
+    attachRowHandlers(row);
+  });
+
+  // Add item
+  if (addItemBtn) {
+    addItemBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const newRow = createRow();
+      itemsTableBody.appendChild(newRow);
+      renumberRows();
+      updateTotal();
+    });
+  }
+
+  // Delete selected rows
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const rows = Array.from(itemsTableBody.querySelectorAll('tr'));
+      rows.forEach(row => {
+        const cb = row.querySelector('input[type="checkbox"]');
+        if (cb && cb.checked) row.remove();
+      });
+      renumberRows();
+      updateTotal();
+      if (selectAllCheckbox) selectAllCheckbox.checked = false;
+    });
+  }
+
+  // Select all toggle
+  if (selectAllCheckbox) {
+    selectAllCheckbox.addEventListener('change', (e) => {
+      const checked = !!e.target.checked;
+      itemsTableBody.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        cb.checked = checked;
+      });
+    });
+  }
+
+  // --- Form validation on submit ---
+  if (billForm) {
+    billForm.addEventListener('submit', function (e) {
+      // clear previous alerts
+      if (alertContainer) alertContainer.innerHTML = '';
+
+      const total = parseFloat((totalPriceInput && totalPriceInput.value) || '0') || 0;
+      if (total === 0) {
+        e.preventDefault();
+        showAlert('Total amount cannot be 0. Please add valid items.', 'danger');
+        return;
+      }
+
+      let invalidQty = false;
+      itemsTableBody.querySelectorAll('tr').forEach(row => {
+        const qtyInput = row.querySelector('input.qtyInput');
+        // if no qty input found, treat as invalid
+        const quantity = qtyInput ? parseInt(qtyInput.value || '0', 10) : 0;
+        if (!quantity || quantity <= 0) invalidQty = true;
+      });
+
+      if (invalidQty) {
+        e.preventDefault();
+        showAlert('Quantity must be greater than 0 for all items.', 'warning');
+        return;
+      }
+
+      // All good: allow submission
+    });
+  } else {
+    console.warn('#billForm not found. Form validation will not run.');
+  }
+
+  // initial total update in case rows are pre-rendered
+  updateTotal();
+});

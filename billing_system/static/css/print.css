@@ -1,0 +1,12 @@
+@media print {
+   nav, .btn, .navbar, footer {
+     display: none !important;
+   }
+   body {
+     background: white;
+   }
+   #billCard {
+     box-shadow: none;
+     border: none;
+   }
+}
