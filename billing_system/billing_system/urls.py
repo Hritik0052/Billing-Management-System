@@ -16,7 +16,7 @@ urlpatterns = [
     path('bills/', include('bills.urls')),
 
     # Admin side 
-    # path('admin/create/', helper.create_bill, name='admin_create_bill'),
+    path('admin0/create/', helper.create_bill, name='admin_create_bill'),
     path('admino/all-bills/', helper.total_bills, name='admin_all_bills'),   
     path('admino/add-employee/', helper.add_employee, name='add_employee'),
     path('admino/employees/', helper.all_employees, name='all_employees'),

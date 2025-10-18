@@ -15,6 +15,54 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
 
+def create_bill(request):
+    # Serialize items queryset to list of dicts with necessary fields
+    items_qs = Item.objects.all()
+    items = list(items_qs.values('id', 'name', 'price'))
+    items_json = json.dumps(items, cls=DjangoJSONEncoder)  # JSON string for template
+    
+    last_bill = Bill.objects.last()
+    last_bill_no = last_bill.bill_no if last_bill else 0
+    next_bill_no = last_bill_no + 1
+
+
+    if request.method == 'POST':
+        customer_name = request.POST.get('customerName')
+        customer_phone = request.POST.get('customerMobile')
+        selected_items = request.POST.getlist('item')
+        quantities = request.POST.getlist('quantity')
+
+
+        print("Customer Name: ", customer_name,"customerMobile: ",customer_phone)
+        print(quantities, " & ", selected_items)
+
+        bill = Bill.objects.create(
+            bill_no=generate_bill_no(),
+            customer_name=customer_name,
+            customer_phone=customer_phone,
+            created_by=request.user
+        )
+
+        total = 0
+        for i, item_id in enumerate(selected_items):
+            item = get_object_or_404(Item, id=item_id)
+            qty = int(quantities[i])
+            subtotal = item.price * qty
+            BillItem.objects.create(
+                bill=bill,
+                item=item,
+                quantity=qty,
+                price=item.price,
+                subtotal=subtotal
+            )
+            total += subtotal
+
+        bill.total = total
+        bill.save()
+        return redirect('view_bill', bill_no=next_bill_no)
+
+    # Pass JSON string to template under 'items_json' key
+    return render(request, 'admin/generate_bill.html', {'items_json': items_json, 'next_bill_no': next_bill_no})
 
 
 # 🟢 Add Item

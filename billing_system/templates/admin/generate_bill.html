@@ -6,7 +6,7 @@
 {% block content %}
 <div class="container-fluid">
     <div class="row mt-4">
-        <!-- Sidebar -->
+        <!-- Sidebar
         <nav class="col-md-2 d-none d-md-block bg-light">
             <div class="position-sticky">
                 <ul class="nav flex-column">
@@ -31,11 +31,17 @@
                     </li>
                 </ul>
             </div>
-        </nav>
+        </nav>  -->
 
         <!-- Main content -->
-        <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4">
-            <h3 class="mb-4 mt-4">Generate Bill</h3>
+        <main class="col-md-12 ms-sm-auto col-lg-12 px-md-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 mt-4">
+                <h3 class="m-0">Generate Bill</h3>
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Back to Dashboard
+                </a>
+            </div>
+            
             <div id="alertContainer" class="mt-3"></div>
             <form class="border rounded shadow-sm p-4 bg-white" id="billForm" method="POST" action="{% url 'create_bill' %}">
                 {% csrf_token %}
