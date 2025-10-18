@@ -9,16 +9,27 @@
               <button onclick="window.history.back()" class="btn btn-outline fs-5 text-white">
                 Back to Page-<i class="fa-solid fa-user-circle text-white"></i>
               </button>
-              <!--<a href="{% url 'employee_dashboard' %}">
-                <i class="fa-solid fa-user-circle text-white" style="cursor:pointer;"></i>
-              </a>-->
             </h3>
             <h4 class="mb-0">Click Here to Download Report as PDF</h4>
-            <h3>
-              <a href="{% url 'download_bills_report' %}?{{ request.GET.urlencode }}">
-                <i class="fa-solid fa-download text-white" style="cursor:pointer;"></i>
-              </a>
-            </h3>
+            <div class="dropdown text-end">
+              <h3 class="d-inline-block">
+                <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="downloadDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fa-solid fa-download text-white"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="downloadDropdown">
+                  <li>
+                    <a class="dropdown-item" href="{% url 'download_csv_report' %}?format=csv&{{ request.GET.urlencode }}">
+                      Download as CSV
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="{% url 'download_pdf_report' %}?format=pdf&{{ request.GET.urlencode }}">
+                      Download as PDF
+                    </a>
+                  </li>
+                </ul>
+              </h3>
+            </div>
           </div>
           
           <div class="card-body">
