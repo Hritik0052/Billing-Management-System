@@ -23,7 +23,7 @@ Admins can generate and manage bills, track employee activity, and export report
 ---
 
 ## 🚀 Technology Stack
-- **Backend:** Python, Django  
+- **Backend:** Python, Django & Django REST Framework
 - **Frontend:** HTML, CSS, JavaScript, Bootstrap  
 - **Database:** SQLite / PostgreSQL (configurable)  
 - **Reports/PDF:** Django ReportLab or custom PDF generation  
